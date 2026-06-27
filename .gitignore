@@ -1,7 +1,7 @@
 # Binários compilados
 *.exe
 *.exe~
-gtx
+/gtx
 dist/
 
 # Planejamento e contexto do Claude (não faz parte do código)

@@ -1,0 +1,90 @@
+version: "1"
+commands:
+  git:
+    description: "Controle de versão Git"
+    subcommands:
+      status:
+        filter: git_status
+        cmd_args: ["--porcelain"]
+        reduction: "~80%"
+        output_example: "staged: foo.go\nmodified: bar.go\nuntracked: 3 arquivos"
+      log:
+        filter: git_log
+        cmd_args: ["--oneline", "--no-decorate"]
+        reduction: "~80%"
+        flags:
+          - name: "-n"
+            default: "10"
+        output_example: "abc1234 feat: add feature"
+      diff:
+        filter: git_diff
+        reduction: "~75%"
+        output_example: "--- a/foo.go\n+++ b/foo.go\n@@ -1,3 +1,4 @@"
+      add:
+        filter: git_simple_ok
+        reduction: "~90%"
+        output_example: "ok"
+      commit:
+        filter: git_commit
+        reduction: "~92%"
+        output_example: "ok abc1234"
+      push:
+        filter: git_push
+        reduction: "~92%"
+        output_example: "ok main"
+      pull:
+        filter: git_pull
+        reduction: "~85%"
+        output_example: "ok 3 arquivos +10 -2"
+
+  docker:
+    description: "Containers Docker"
+    subcommands:
+      ps:
+        filter: docker_ps
+        reduction: "~80%"
+        output_example: "nginx  running  0.0.0.0:80->80/tcp"
+      images:
+        filter: docker_images
+        reduction: "~80%"
+        output_example: "nginx:latest  142MB"
+      logs:
+        filter: docker_logs
+        reduction: "~70%"
+        output_example: "health check ok (repetido 47x)"
+      compose:
+        description: "Docker Compose"
+        subcommands:
+          ps:
+            filter: docker_compose_ps
+            reduction: "~75%"
+            output_example: "web  running  0.0.0.0:8080->80/tcp"
+
+  gh:
+    description: "GitHub CLI"
+    subcommands:
+      pr:
+        description: "Pull Requests"
+        subcommands:
+          list:
+            filter: gh_pr_list
+            reduction: "~75%"
+            output_example: "#42  fix: bug  [open]  user (2d)"
+          view:
+            filter: gh_pr_view
+            reduction: "~70%"
+            output_example: "fix: bug\n[open] user → main\nchecks: 3/3 ok"
+      issue:
+        description: "Issues"
+        subcommands:
+          list:
+            filter: gh_issue_list
+            reduction: "~75%"
+            output_example: "#99  título da issue  [open]  (bug)"
+      run:
+        description: "Workflow Runs"
+        subcommands:
+          list:
+            filter: gh_run_list
+            reduction: "~70%"
+            output_example: "✓ CI  main  (2m)"

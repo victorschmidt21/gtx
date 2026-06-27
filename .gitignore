@@ -1,0 +1,29 @@
+# Binários compilados
+*.exe
+*.exe~
+gtx
+dist/
+
+# Planejamento e contexto do Claude (não faz parte do código)
+openspec/
+.claude/
+
+# Go
+vendor/
+*.test
+*.out
+coverage.html
+
+# Banco de analytics local
+*.db
+*.db-shm
+*.db-wal
+
+# Backups do hook installer
+*.gtx-backup
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

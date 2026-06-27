@@ -15,18 +15,24 @@ import (
 	"github.com/victorschmidt21/gtx/internal/registry"
 	"github.com/victorschmidt21/gtx/internal/rewrite"
 	"github.com/victorschmidt21/gtx/internal/runner"
+	"github.com/victorschmidt21/gtx/internal/updater"
 )
 
 var version = "dev"
 
 func main() {
+	// Intercept -v / --version before cobra so we can enrich output with GitHub check.
+	if len(os.Args) == 2 && (os.Args[1] == "-v" || os.Args[1] == "--version") {
+		updater.PrintVersion(version)
+		os.Exit(0)
+	}
+
 	specPath := specFilePath()
 	reg := registry.New(specPath)
 
 	root := &cobra.Command{
-		Use:     "gtx",
-		Short:   "Go Token eXpressor — comprime outputs de comandos para LLMs",
-		Version: version,
+		Use:   "gtx",
+		Short: "Go Token eXpressor — comprime outputs de comandos para LLMs",
 	}
 
 	// gtx <comando> [args...] — executa comando com filtro
@@ -117,7 +123,16 @@ func main() {
 		},
 	}
 
-	root.AddCommand(rewriteCmd, initCmd, gainCmd, listCmd)
+	// Subcomando: gtx update
+	updateCmd := &cobra.Command{
+		Use:   "update",
+		Short: "Atualiza o GTX para a versão mais recente",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return updater.SelfUpdate(version)
+		},
+	}
+
+	root.AddCommand(rewriteCmd, initCmd, gainCmd, listCmd, updateCmd)
 
 	// ArbitraryArgs: permite `gtx git status`, `gtx git log -n 10`, etc.
 	// FParseErrWhitelist: ignora flags desconhecidas (como -n, --oneline)

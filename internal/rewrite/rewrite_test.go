@@ -21,9 +21,17 @@ func TestRewrite_WithFilter(t *testing.T) {
 
 func TestRewrite_WithoutFilter(t *testing.T) {
 	reg := newReg()
+	out := rewrite.Rewrite("kubectl apply -f deploy.yaml", reg)
+	if out != "kubectl apply -f deploy.yaml" {
+		t.Errorf("esperava passthrough, obteve: %q", out)
+	}
+}
+
+func TestRewrite_NpmInstall(t *testing.T) {
+	reg := newReg()
 	out := rewrite.Rewrite("npm install", reg)
-	if out != "npm install" {
-		t.Errorf("esperava passthrough 'npm install', obteve: %q", out)
+	if out != "gtx npm install" {
+		t.Errorf("esperava 'gtx npm install', obteve: %q", out)
 	}
 }
 

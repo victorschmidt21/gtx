@@ -21,5 +21,8 @@ func (r *Registry) registerBuiltins() {
 		"gh_pr_view":        &filter.GhPrViewFilter{},
 		"gh_issue_list":     &filter.GhIssueListFilter{},
 		"gh_run_list":       &filter.GhRunListFilter{},
+		"npm_install":       &filter.NpmInstallFilter{},
+		"pnpm_install":      &filter.PnpmInstallFilter{},
+		"yarn_install":      &filter.YarnInstallFilter{},
 	}
 }

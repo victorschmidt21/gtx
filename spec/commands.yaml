@@ -89,27 +89,26 @@ commands:
             reduction: "~70%"
             output_example: "✓ CI  main  (2m)"
 
-  node:
-    description: "Node.js package managers"
+  npm:
+    description: "Node.js npm"
     subcommands:
-      npm:
-        description: "npm"
-        subcommands:
-          install:
-            filter: npm_install
-            reduction: "~95%"
-            output_example: "ok (342 pacotes, 4.2s)"
-      pnpm:
-        description: "pnpm"
-        subcommands:
-          install:
-            filter: pnpm_install
-            reduction: "~95%"
-            output_example: "ok (342 pacotes, 4.2s)"
-      yarn:
-        description: "yarn"
-        subcommands:
-          install:
-            filter: yarn_install
-            reduction: "~95%"
-            output_example: "ok (4.2s)"
+      install:
+        filter: npm_install
+        reduction: "~95%"
+        output_example: "ok (342 pacotes, 4.2s)"
+
+  pnpm:
+    description: "Node.js pnpm"
+    subcommands:
+      install:
+        filter: pnpm_install
+        reduction: "~95%"
+        output_example: "ok (342 pacotes, 4.2s)"
+
+  yarn:
+    description: "Node.js yarn"
+    subcommands:
+      install:
+        filter: yarn_install
+        reduction: "~95%"
+        output_example: "ok (4.2s)"

@@ -1,20 +1,22 @@
 package integration_test
 
 import (
+	"os"
 	"os/exec"
 	"strings"
 	"testing"
 )
 
 // buildGtx compila o binário gtx para os testes de integração.
+// Sufixo .exe é obrigatório no Windows (exec.LookPath usa PATHEXT).
 func buildGtx(t *testing.T) string {
 	t.Helper()
-	out, err := exec.Command("go", "build", "-o", "gtx_test_bin", "../../cmd/gtx").CombinedOutput()
+	out, err := exec.Command("go", "build", "-o", "gtx_test_bin.exe", "../../cmd/gtx").CombinedOutput()
 	if err != nil {
 		t.Fatalf("build falhou: %v\n%s", err, out)
 	}
-	t.Cleanup(func() { exec.Command("cmd", "/c", "del", "gtx_test_bin").Run() })
-	return "./gtx_test_bin"
+	t.Cleanup(func() { os.Remove("gtx_test_bin.exe") })
+	return "./gtx_test_bin.exe"
 }
 
 func TestIntegration_GitStatus(t *testing.T) {

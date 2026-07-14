@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"gopkg.in/yaml.v3"
+
+	builtin "github.com/victorschmidt21/gtx/spec"
 )
 
 // CommandSpec é a spec declarativa de um único subcomando.
@@ -32,11 +34,12 @@ type Spec struct {
 	Commands CommandsMap `yaml:"commands"`
 }
 
-// Load lê e valida commands.yaml. Se o arquivo não existe, retorna Spec vazio.
+// Load lê e valida commands.yaml. Se o arquivo não existe, usa a spec
+// embutida no binário — garante filtros ativos em instalações standalone.
 func Load(path string) (*Spec, error) {
 	data, err := os.ReadFile(path)
 	if os.IsNotExist(err) {
-		return &Spec{Version: "1", Commands: CommandsMap{}}, nil
+		data, err = builtin.Builtin, nil
 	}
 	if err != nil {
 		return nil, fmt.Errorf("lendo %s: %w", path, err)

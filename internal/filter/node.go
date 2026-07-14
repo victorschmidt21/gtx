@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	npmSuccessRe  = regexp.MustCompile(`added (\d+) packages? in ([\d.]+)s`)
+	// cobre "added 1 package in 4s" e "added 1 package, and audited 2 packages in 711ms"
+	npmSuccessRe  = regexp.MustCompile(`added (\d+) packages?.* in ([\d.]+m?s)`)
 	npmUpToDateRe = regexp.MustCompile(`up to date`)
 
 	pnpmPackagesRe = regexp.MustCompile(`Packages: \+(\d+)`)
@@ -58,7 +59,7 @@ func (f *NpmInstallFilter) Name() string { return "npm_install" }
 func (f *NpmInstallFilter) Apply(output []byte, ctx Context) (Result, error) {
 	return nodeInstallResult(f.Name(), output, ctx, func(text string) string {
 		if m := npmSuccessRe.FindStringSubmatch(text); m != nil {
-			return fmt.Sprintf("ok (%s pacotes, %ss)", m[1], m[2])
+			return fmt.Sprintf("ok (%s pacotes, %s)", m[1], m[2])
 		}
 		if npmUpToDateRe.MatchString(text) {
 			return "ok (sem alterações)"

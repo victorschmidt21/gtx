@@ -9,7 +9,8 @@ import (
 	"time"
 )
 
-const defaultTimeout = 60 * time.Second
+// 10min: npm/pnpm/yarn install em projetos grandes passa fácil de 60s.
+const defaultTimeout = 10 * time.Minute
 
 // RunResult contém o output e exit code de um comando executado.
 type RunResult struct {

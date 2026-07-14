@@ -30,6 +30,17 @@ func main() {
 	specPath := specFilePath()
 	reg := registry.New(specPath)
 
+	// Comandos proxied (git, docker, npm...) NÃO passam pelo cobra:
+	// o parser dele remove flags desconhecidas dos args (ex: `-m "msg"`
+	// de um `gtx git commit -m "msg"`), corrompendo o comando real.
+	if len(os.Args) > 1 && !isGtxSubcommand(os.Args[1]) && !strings.HasPrefix(os.Args[1], "-") {
+		if err := runFiltered(reg, os.Args[1:]); err != nil {
+			fmt.Fprintf(os.Stderr, "gtx: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
 	root := &cobra.Command{
 		Use:   "gtx",
 		Short: "Go Token eXpressor — comprime outputs de comandos para LLMs",
@@ -143,6 +154,15 @@ func main() {
 	if err := root.Execute(); err != nil {
 		os.Exit(1)
 	}
+}
+
+// isGtxSubcommand identifica subcomandos internos do gtx (roteados via cobra).
+func isGtxSubcommand(name string) bool {
+	switch name {
+	case "rewrite", "init", "gain", "list", "update", "help", "completion":
+		return true
+	}
+	return false
 }
 
 func runFiltered(reg *registry.Registry, args []string) error {

@@ -16,6 +16,11 @@ func (f *GitStatusFilter) Apply(output []byte, ctx Context) (Result, error) {
 	tokensIn := EstimateTokens(output)
 	text := string(output)
 
+	// exit != 0 (ex: fora de um repo) — preserva o erro em vez de "ok (limpo)"
+	if ctx.ExitCode != 0 {
+		return result(f.Name(), strings.TrimSpace(text), tokensIn), nil
+	}
+
 	var staged, modified, deleted, untracked []string
 
 	for _, line := range strings.Split(text, "\n") {
@@ -124,22 +129,22 @@ func (f *GitDiffFilter) Apply(output []byte, ctx Context) (Result, error) {
 	tokensIn := EstimateTokens(output)
 	text := strings.TrimSpace(string(output))
 	if text == "" {
+		// --quiet: output vazio com exit != 0 significa que HÁ alterações
+		if ctx.ExitCode != 0 {
+			return result(f.Name(), "há alterações (exit 1)", tokensIn), nil
+		}
 		return result(f.Name(), "ok (sem alterações)", tokensIn), nil
 	}
 
 	var kept []string
 	for _, line := range strings.Split(text, "\n") {
-		// mantém: headers de arquivo, hunks, linhas +/-; remove linhas de contexto excessivas
-		if strings.HasPrefix(line, "diff ") ||
-			strings.HasPrefix(line, "index ") ||
-			strings.HasPrefix(line, "---") ||
-			strings.HasPrefix(line, "+++") ||
-			strings.HasPrefix(line, "@@") ||
+		// mantém: ---/+++ (identificam o arquivo), hunks @@ e linhas +/-.
+		// remove: "diff --git" e "index" (redundantes) e linhas de contexto.
+		if strings.HasPrefix(line, "@@") ||
 			strings.HasPrefix(line, "+") ||
 			strings.HasPrefix(line, "-") {
 			kept = append(kept, line)
 		}
-		// linhas de contexto (sem prefixo +/-) são omitidas
 	}
 
 	if len(kept) == 0 {
